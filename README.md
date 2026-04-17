@@ -61,6 +61,7 @@ Clustering quality was assessed using the silhouette score, and results were vis
 
 ## Project Structure
 
+```plain text
 .
 ├── data/
 │   ├── cpi_tables.xlsx
@@ -82,6 +83,7 @@ Clustering quality was assessed using the silhouette score, and results were vis
 ├── project_summary.pptx      # Full summary of project
 ├── README.md
 └── run.R                     # Entry point for outputs
+```
 
 ## Reproducing the Analysis
 
