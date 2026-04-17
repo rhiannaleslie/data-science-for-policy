@@ -6,41 +6,28 @@ get_cluster_partitions <- function(data, group_col, cluster_num) {
   features <- data %>%
     select(-all_of(group_col))
   
-  # Create a new clustering task with features 
-  task_cluster <- TaskClust$new(
-    id = "clusters",
-    backend = features)
+  # Scale features 
+  features_scaled <- as.data.frame(lapply(features, function(x) {
+    2 * (x - min(x)) / (max(x) - min(x)) - 1
+  }))
   
-  #scaling the features
-  po_scaled <- po("scalerange",param_vals = list(lower = -1, upper = 1))  
+  # Run kmeans
+  km <- kmeans(features_scaled, centers = cluster_num, algorithm = "Lloyd", iter.max = 100L)
   
-  # Clone the task and train 
-  task_cluster_scaled <- po_scaled$train(list(task_cluster))[[1]]$clone()
+  # Silhouette score
+  sil <- cluster::silhouette(km$cluster, dist(features_scaled))
+  sil_score <- mean(sil[, 3])
   
-  # create a learner object
-  learner_kmeans = mlr_learners$get("clust.kmeans")
+  # Silhouette plot
+  sil_plot <- factoextra::fviz_silhouette(sil)
   
-  learner_kmeans$param_set$values = list(centers = cluster_num, algorithm = "Lloyd", iter.max = 100L)
-  
-  # Train the kmeans learner on scaled dataset
-  learner_kmeans$train(task_cluster)
-  
-  # Make predictions from trained models
-  preds = learner_kmeans$predict(task_cluster)
-  
-  #add the partition preds on the data
+  # Add partitions back to data
   partitioned_data <- data %>%
-    dplyr::mutate(partition = preds$partition) %>%
+    dplyr::mutate(partition = km$cluster) %>%
     tidyr::pivot_longer(cols = contains("20"),
                         names_to = "month",
                         values_to = "perc_change") %>%
     dplyr::left_join(date_lookup, by = c("month"))
-  
-  # Calculate sil score
-  sil_score <- preds$score(measures = msr("clust.silhouette"), task_cluster_scaled)
-  
-  # Sillhouette plot
-  sil_plot <- autoplot(preds, task_cluster_scaled, type="sil") 
   
   return(list("data" = partitioned_data,
               "score" = sil_score,

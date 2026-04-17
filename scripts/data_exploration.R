@@ -4,11 +4,8 @@ source("scripts/get_cpi_data.R")
 
 #wholesale price of gas plot
 
-sap_gas <- readxl::read_excel("data/sap_price_gas.xlsx",
-                              sheet = "Data",
-                              range = "A5:C2070") %>%
-  filter(Date >= "2021-07-01",
-         Date <= "2023-07-01") %>%
+sap_gas <- readxl::read_excel("data/sap_price_gas.xlsx", sheet = "Data", range = "A5:C2070") %>%
+  filter(Date >= "2021-07-01",Date <= "2023-07-01") %>%
   janitor::clean_names() %>%
   ggplot() +
   geom_line(aes(x = date, y = sap_preceding_seven_day_rolling_average_p_k_wh)) +

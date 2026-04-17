@@ -1,12 +1,2 @@
 #load necessary packages
-pacman::p_load(
-  dplyr,
-  tidyr,
-  purrr,
-  ggplot2,
-  readxl,
-  lubridate,
-  mlr3verse,
-  mlr3cluster,
-  pwt9
-)
+pacman::p_load(dplyr, tidyr, janitor, purrr, ggplot2, readxl, lubridate, cluster, factoextra, pwt9)
