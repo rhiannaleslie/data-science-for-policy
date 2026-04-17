@@ -61,6 +61,7 @@ Clustering quality was assessed using the silhouette score, and results were vis
 
 ## Project Structure
 
+.
 ├── data/
 │   ├── cpi_tables.xlsx
 │   └── sap_prices_gas.xlsx
